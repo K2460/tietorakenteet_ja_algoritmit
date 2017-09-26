@@ -10,6 +10,8 @@ namespace kotitehtavat
     {
         static void Main(string[] args)
         {
+            kt5 obj = new kt5();
+            obj.A();
         }
     }
 }
