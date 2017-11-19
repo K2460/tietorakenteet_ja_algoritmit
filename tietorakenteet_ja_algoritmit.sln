@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kotitehtavat", "kotitehtavat\kotitehtavat.csproj", "{87FED2DF-FD5B-4F51-8CAC-D9D767CDD25D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "harkka", "harkka\harkka.csproj", "{BB407853-E60F-4324-8F50-B77BCD71217D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{87FED2DF-FD5B-4F51-8CAC-D9D767CDD25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87FED2DF-FD5B-4F51-8CAC-D9D767CDD25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87FED2DF-FD5B-4F51-8CAC-D9D767CDD25D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB407853-E60F-4324-8F50-B77BCD71217D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB407853-E60F-4324-8F50-B77BCD71217D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB407853-E60F-4324-8F50-B77BCD71217D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB407853-E60F-4324-8F50-B77BCD71217D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
