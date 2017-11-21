@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace harkka
 {
@@ -11,10 +12,11 @@ namespace harkka
         static void Main(string[] args)
         {
             //vertailujen lukumäärät tallennetaan listaan tyylillä:
-            //  "haunNimi" : lkm
-            List<KeyValuePair<string, int>> hakujenVertailujenLkm = new List<KeyValuePair<string, int>>();
+            //  "haunNimi" : vertailujenLkm : aika
+            List<Tuple<string, int, double>> hakujenTulokset = new List<Tuple<string, int, double>>();
             //luodaan random luokan instanssi jotta voidaan luoda random numeroita
             Random random = new Random();
+            Stopwatch sw = new Stopwatch();
 
             //tehdään testitauluja, haetaan niistä arvottua numeroa ja tallennetaan vertailujen lkm listaan
             for (int x = 0; x<1000; x++)
@@ -23,57 +25,73 @@ namespace harkka
                 int[] luvut = LuoTauluKokonaislukuja(random, 100000, 2);
                 //arvotaan haettava luku
                 int haettava = random.Next(luvut[0], luvut[luvut.Length - 1]);
-                //suoritetaan haut
-                int[] puolitusHaku = Puolitushaku(luvut, haettava, 0, luvut.Length);
-                int perakkaisHaku = Perakkaishaku(luvut, haettava);
-                //lisätään vertailujen lkm listaan
-                hakujenVertailujenLkm.Add(new KeyValuePair<string, int>("puolitushaku", puolitusHaku[1]));
-                hakujenVertailujenLkm.Add(new KeyValuePair<string, int>("peräkkäishaku", perakkaisHaku));
+
+                //suoritetaan puolitushaku
+                double[] puolitusHaku = Puolitushaku(luvut, haettava, 0, luvut.Length, sw);
+                //lisätään tulokset listaan
+                hakujenTulokset.Add(new Tuple<string, int, double>("puolitushaku", Convert.ToInt32(puolitusHaku[1]), puolitusHaku[2]));
+                //nollataan kello
+                sw.Reset();
+
+                //suoritetaan peräkkäishaku
+                double[] perakkaisHaku = Perakkaishaku(luvut, haettava, sw);
+                //lisätään tulokset listaan
+                hakujenTulokset.Add(new Tuple<string, int, double>("peräkkäishaku", Convert.ToInt32(perakkaisHaku[0]), perakkaisHaku[1]));
+                //nollataan kello
+                sw.Reset();
+
             }
 
-            Console.WriteLine("Puolitushaun vertailujen keskiarvo: "+getAverage("puolitushaku", hakujenVertailujenLkm));
-            Console.WriteLine("Peräkkäishaun vertailujen keskiarvo: " + getAverage("peräkkäishaku", hakujenVertailujenLkm));
+            double[] puolitusHaunKeskiarvot = getAverages("puolitushaku", hakujenTulokset);
+            double[] peräkkäisHaunKeskiarvot = getAverages("peräkkäishaku", hakujenTulokset);
 
+
+            Console.WriteLine(String.Format("Stopwatchin frekvenssi eli kuinka monta tickiä / sekuntti: {0}.", Stopwatch.Frequency));
+            Console.WriteLine(String.Format("Vertailuja puolitushaussa keskimäärin: {0}.\nAikaa kulunut puoltushakuun keskimäärin: {1} ticks",puolitusHaunKeskiarvot[0], puolitusHaunKeskiarvot[1]));
+            Console.WriteLine(String.Format("Vertailuja peräkkäishaussa keskimäärin: {0}.\nAikaa kulunut peräkkäishakuun keskimäärin: {1} ticks", peräkkäisHaunKeskiarvot[0], peräkkäisHaunKeskiarvot[1]));
         }
 
-        //palauttaa int[]{ etsityn numeron indeksi, vertailujen lkm }
-        public static int[] Puolitushaku(int[] taulu, int haettava, int vasen, int oikea)
+        //palauttaa double[]{ etsityn numeron indeksi, vertailujen lkm, hakuun kuluneet millisekunnit}
+        public static double[] Puolitushaku(int[] taulu, int haettava, int vasen, int oikea, Stopwatch sw)
         {
             int vertailut = 0;
+            sw.Start();
             while (vasen <= oikea)
             {
                 vertailut++;
                 int keski = (vasen + oikea) / 2;
                 if (taulu[keski] == haettava)
                 {
-                    //vertailut++;
-                    return new int[]{ keski, vertailut };
+                    sw.Stop();
+                    return new double[]{ keski, vertailut, Convert.ToDouble(sw.ElapsedTicks) };
                 }
                 if(haettava < taulu[keski])
                 {
-                    //vertailut++;
                     oikea = keski - 1;
                 }
                 else
                 {
-                    //vertailut++;
                     vasen = keski + 1;
                 }
             }
-            return new int[] { -1, vertailut };
+            sw.Stop();
+            return new double[] { -1, vertailut, Convert.ToDouble(sw.ElapsedTicks) };
         }
 
-        //palauttaa int[]{ etsityn numeron indeksi, vertailujen lkm }
-        public static int Perakkaishaku(int[] taulu, int haettava)
+        //palauttaa double[]{ etsityn numeron indeksi, vertailujen lkm, hakuun kuluneet millisekunnit }
+        public static double[] Perakkaishaku(int[] taulu, int haettava, Stopwatch sw)
         {
+            sw.Start();
             for(int x = 0; x<taulu.Length; x++)
             {
                 if (taulu[x] == haettava)
                 {
-                    return x;
+                    sw.Stop();
+                    return new double[] { x, Convert.ToDouble(sw.ElapsedTicks) };
                 }
             }
-            return taulu.Length-1;
+            sw.Stop();
+            return new double[] { taulu.Length - 1, Convert.ToDouble(sw.ElapsedTicks) };
         }
 
 
@@ -100,17 +118,23 @@ namespace harkka
         }
 
         //palauttaa keskiarvon
-        public static double getAverage(string key, List<KeyValuePair<string,int>> lista)
+        public static double[] getAverages(string key, List<Tuple<string, int, double>> lista)
         {
             List<int> nums = new List<int>();
-            foreach (KeyValuePair<string, int> record in lista)
+            List<double> ajat = new List<double>();
+
+            foreach (Tuple<string, int, double> record in lista)
             {
-                if (record.Key == key)
+                if (record.Item1 == key)
                 {
-                    nums.Add(record.Value);
+                    //lisätään vertailujen lkm
+                    nums.Add(record.Item2);
+                    //lisätään aika
+                    ajat.Add(record.Item3);
                 }
             }
-            return nums.Average();
+
+            return new double[] { nums.Average(), ajat.Average() };
         }
     }
 }
