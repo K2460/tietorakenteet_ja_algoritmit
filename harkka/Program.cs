@@ -62,6 +62,7 @@ namespace harkka
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine(String.Format("Vertailuja peräkkäishaussa keskimäärin: {0}.\nAikaa kulunut peräkkäishakuun keskimäärin: {1} ns", peräkkäisHaunKeskiarvot[0], (peräkkäisHaunKeskiarvot[1] / Stopwatch.Frequency) * 1000000000));
+            Console.ReadLine();
         }
 
         //palauttaa double[]{ etsityn numeron indeksi, vertailujen lkm, hakuun kuluneet millisekunnit}
