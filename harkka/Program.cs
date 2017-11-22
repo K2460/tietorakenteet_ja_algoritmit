@@ -12,17 +12,29 @@ namespace harkka
         static void Main(string[] args)
         {
             //vertailujen lukumäärät tallennetaan listaan tyylillä:
-            //  "haunNimi" : vertailujenLkm : aika
+            //  "haunNimi" : vertailujenLkm : aika (ticks)
             List<Tuple<string, int, double>> hakujenTulokset = new List<Tuple<string, int, double>>();
             //luodaan random luokan instanssi jotta voidaan luoda random numeroita
             Random random = new Random();
             Stopwatch sw = new Stopwatch();
 
+            //pyydetään input
+            int[] userInput = new int[] { -1, -1 };
+            while(userInput[0] == -1 || userInput[1] == -1)
+            {
+                Console.WriteLine("Syötä kunnon luvut!");
+                Console.Clear();
+                userInput = getUserInput();
+            }
+            int looppienLkm = userInput[0];
+            int taulunAlkiodenLkm = userInput[1];
+            
+
             //tehdään testitauluja, haetaan niistä arvottua numeroa ja tallennetaan vertailujen lkm listaan
-            for (int x = 0; x<1000; x++)
+            for (int x = 0; x<looppienLkm; x++)
             {
                 //luodaan taulu kokonaislukuja
-                int[] luvut = LuoTauluKokonaislukuja(random, 100000, 2);
+                int[] luvut = LuoTauluKokonaislukuja(random, taulunAlkiodenLkm, 2);
                 //arvotaan haettava luku
                 int haettava = random.Next(luvut[0], luvut[luvut.Length - 1]);
 
@@ -45,10 +57,11 @@ namespace harkka
             double[] puolitusHaunKeskiarvot = getAverages("puolitushaku", hakujenTulokset);
             double[] peräkkäisHaunKeskiarvot = getAverages("peräkkäishaku", hakujenTulokset);
 
-
-            Console.WriteLine(String.Format("Stopwatchin frekvenssi eli kuinka monta tickiä / sekuntti: {0}.", Stopwatch.Frequency));
-            Console.WriteLine(String.Format("Vertailuja puolitushaussa keskimäärin: {0}.\nAikaa kulunut puoltushakuun keskimäärin: {1} ticks",puolitusHaunKeskiarvot[0], puolitusHaunKeskiarvot[1]));
-            Console.WriteLine(String.Format("Vertailuja peräkkäishaussa keskimäärin: {0}.\nAikaa kulunut peräkkäishakuun keskimäärin: {1} ticks", peräkkäisHaunKeskiarvot[0], peräkkäisHaunKeskiarvot[1]));
+            
+            Console.WriteLine(String.Format("Vertailuja puolitushaussa keskimäärin: {0}.\nAikaa kulunut puoltushakuun keskimäärin: {1} ns",puolitusHaunKeskiarvot[0], (puolitusHaunKeskiarvot[1]/Stopwatch.Frequency) * 1000000000));
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(String.Format("Vertailuja peräkkäishaussa keskimäärin: {0}.\nAikaa kulunut peräkkäishakuun keskimäärin: {1} ns", peräkkäisHaunKeskiarvot[0], (peräkkäisHaunKeskiarvot[1] / Stopwatch.Frequency) * 1000000000));
         }
 
         //palauttaa double[]{ etsityn numeron indeksi, vertailujen lkm, hakuun kuluneet millisekunnit}
@@ -78,7 +91,7 @@ namespace harkka
             return new double[] { -1, vertailut, Convert.ToDouble(sw.ElapsedTicks) };
         }
 
-        //palauttaa double[]{ etsityn numeron indeksi, vertailujen lkm, hakuun kuluneet millisekunnit }
+        //palauttaa double[]{ vertailujen määrä, hakuun kulunut aika (ticks) }
         public static double[] Perakkaishaku(int[] taulu, int haettava, Stopwatch sw)
         {
             sw.Start();
@@ -101,7 +114,7 @@ namespace harkka
         public static int[] LuoTauluKokonaislukuja(Random random, int taulunKoko, int mutator)
         {
             int[] taulu = new int[taulunKoko];
-            for (int x = 0; x < taulu.Length; x++)
+            for (int x = 0; x < taulunKoko; x++)
             {
                 //lisätään ensimmäinen luku
                 if (x == 0)
@@ -110,7 +123,7 @@ namespace harkka
                 }
                 if (x > 0)
                 {
-                    //edellinen luku + 1-20
+                    //edellinen luku + 
                     taulu[x] = taulu[x - 1] + random.Next(mutator);
                 }
             }
@@ -135,6 +148,29 @@ namespace harkka
             }
 
             return new double[] { nums.Average(), ajat.Average() };
+        }
+
+        //pyydetään input
+        public static int[] getUserInput()
+        {
+            //pyydetään kuinka monta kertaa algoritmit ajetaan
+
+            Console.WriteLine("Kuinka monta kertaa algoritmit ajetaan? (Isompi luku tarkentaa keskiarvojen tarkkuutta)");
+            bool x = int.TryParse(Console.ReadLine(), out int resultA);
+
+            //kuinka isoja järjesteltyjä listoja luodaan?
+            Console.WriteLine("Kuinka isoista järjestetyistä listoista yksittäistä alkiota haetaan? (Alkioiden lkm)");
+            bool y = int.TryParse(Console.ReadLine(), out int resultB);
+
+            //katsotaan tuliko kunnon input
+            if (x && y)
+            {
+                return new int[] { resultA, resultB };
+            }
+            else
+            {
+                return new int[] { -1, -1 };
+            }
         }
     }
 }
