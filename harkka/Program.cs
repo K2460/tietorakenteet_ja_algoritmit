@@ -19,8 +19,8 @@ namespace harkka
             Stopwatch sw = new Stopwatch();
 
             //pyydetään input
-            int[] userInput = new int[] { -1, -1 };
-            while(userInput[0] == -1 || userInput[1] == -1)
+            int[] userInput = new int[] { -1, -1, -1 };
+            while(userInput[0] == -1 || userInput[1] == -1 || userInput[2] == -1)
             {
                 Console.WriteLine("Syötä kunnon luvut!");
                 Console.Clear();
@@ -28,13 +28,14 @@ namespace harkka
             }
             int looppienLkm = userInput[0];
             int taulunAlkiodenLkm = userInput[1];
+            int mutator = userInput[2];
             
 
             //tehdään testitauluja, haetaan niistä arvottua numeroa ja tallennetaan vertailujen lkm listaan
             for (int x = 0; x<looppienLkm; x++)
             {
                 //luodaan taulu kokonaislukuja
-                int[] luvut = LuoTauluKokonaislukuja(random, taulunAlkiodenLkm, 2);
+                int[] luvut = LuoTauluKokonaislukuja(random, taulunAlkiodenLkm, mutator);
                 //arvotaan haettava luku
                 int haettava = random.Next(luvut[0], luvut[luvut.Length - 1]);
 
@@ -152,10 +153,10 @@ namespace harkka
         }
 
         //pyydetään input
+        //palauttaa -1 jos 
         public static int[] getUserInput()
         {
             //pyydetään kuinka monta kertaa algoritmit ajetaan
-
             Console.WriteLine("Kuinka monta kertaa algoritmit ajetaan? (Isompi luku tarkentaa keskiarvojen tarkkuutta)");
             bool x = int.TryParse(Console.ReadLine(), out int resultA);
 
@@ -163,14 +164,18 @@ namespace harkka
             Console.WriteLine("Kuinka isoista järjestetyistä listoista yksittäistä alkiota haetaan? (Alkioiden lkm)");
             bool y = int.TryParse(Console.ReadLine(), out int resultB);
 
+            //hajonta listan lukujen välillä (muuttuja mutator LuoTauluKokonaisLukuja funktiossa)
+            Console.WriteLine("Hajonta listan lukujen välillä? 2 hyvä.");
+            bool z = int.TryParse(Console.ReadLine(), out int resultC);
+
             //katsotaan tuliko kunnon input
-            if (x && y)
+            if (x && y && z)
             {
-                return new int[] { resultA, resultB };
+                return new int[] { resultA, resultB, resultC };
             }
             else
             {
-                return new int[] { -1, -1 };
+                return new int[] { -1, -1, -1};
             }
         }
     }
